@@ -17,7 +17,7 @@ L = instaloader.Instaloader()
 
 # Login or load session
 
-L.login('username', 'password')        # (login)
+L.login('', '')        # (login)
 #L.interactive_login(USER)      # (ask password on terminal)
 # L.load_session_from_file('dslr.lover.nepal') # (load session created w/
 
@@ -33,7 +33,7 @@ def wait_for_internet_connection():
     while True:
         try:
         
-            response = http.request('GET', 'http://ku.edu.np')
+            response = http.request('GET', 'google.com')
             return
         except:
             print('No internet connection.\nTrying after 5 seconds.\n')
@@ -57,6 +57,17 @@ for profile in p:
         p.remove(profile)
 
 
+# if continue halfway through a user
+# user_dict = {}
+# filename = "downloads/user.csv"
+# with open(filename, 'r') as csvfile:
+#     csvreader = csv.reader(csvfile)
+#     fields = next(csvreader)
+#     for r in csvreader:
+#         user_dict[r[0]] = r
+
+
+
 # input()
 print('Resuming from:',p[0])
 PROFILE = p[:]
@@ -73,8 +84,6 @@ for ind in range(len(PROFILE)):
 
             csv_writer = csv.writer(csvf)
             csv_writer.writerow(['user_id','username','fullname','is_verified','is_private','media_count','follower_count','following_count','bio','website','emails','last_activity','scrape_of', 'scraped_at'])
-            
-
     
         profile = instaloader.Profile.from_username(L.context, pro)
         main_followers = profile.followers
@@ -82,6 +91,10 @@ for ind in range(len(PROFILE)):
         total=0
         # Print list of followees
         for person in profile.get_followers():
+            
+            # if person.userid in user_dict:
+            #     continue
+
             try:
                 wait_for_internet_connection()
                 total+=1
@@ -97,32 +110,24 @@ for ind in range(len(PROFILE)):
                 emails = re.findall(r"[a-z0-9\.\-+_]+@[a-z0-9\.\-+_]+\.[a-z]+", bio)
                 website = person.external_url
                 #last activity
-                try:
-                    follower_profile = instaloader.Profile.from_username(L.context, username)
-                    for post in follower_profile.get_posts():
-                        last_activity = post.date_local
-                        break
-                except Exception as e:
-                    print(e)
-                    last_activity=''
-
 
                 print('Username:',username)
-                print('Last Activity',last_activity)
+                # print('Last Activity',last_activity)
                 with open(filename,'a',newline='') as csvf:
 
                     csv_writer = csv.writer(csvf)
-                    csv_writer.writerow([user_id,username,fullname,is_verified,is_private,media_count,follower_count,following_count,bio,website,emails,last_activity,pro,curr])
+                    csv_writer.writerow([user_id,username,fullname,is_verified,is_private,media_count,follower_count,following_count,bio,website,emails])
                 # os.system('clear')
                 # os.system('cls' if os.name == 'nt' else 'clear')
 
                 print('--------------------------------------------------------------------------------\nTotal followers scraped:',total,' out of',main_followers)
                 print('Time:',str(datetime.timedelta(seconds=(timer()-start))))
                 print('Current Account:',ind+1,'\t Remaining Accounts:',len(PROFILE)-ind-1 ,'\nAccount Name:',pro)
-                
+                sleep(45)
             
             except Exception as e:
                 print(e)
+                sleep(600)
             
 
         #saving the last account for resume
