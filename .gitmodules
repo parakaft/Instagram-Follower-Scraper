@@ -1,0 +1,3 @@
+[submodule "hatemap"]
+	path = hatemap
+	url = https://github.com/parakaft/hatemap.git
